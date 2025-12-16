@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 
-# Días válidos
 DIAS_VALIDOS = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"}
 
 class EjercicioBase(BaseModel):
@@ -43,3 +42,15 @@ class Rutina(RutinaBase):
 
     class Config:
         from_attributes = True
+
+class RutinaUpdate(BaseModel):
+    nombre: Optional[str] = Field(None, min_length=1, max_length=100)
+    descripcion: Optional[str] = Field(None, max_length=500)
+    dia_semana: Optional[str] = Field(None, min_length=4, max_length=10)
+    ejercicios: Optional[List[EjercicioCreate]] = None
+    
+    @validator('dia_semana')
+    def validate_dia_semana(cls, v):
+        if v is not None and v.lower() not in DIAS_VALIDOS:
+            raise ValueError(f"Día inválido. Debe ser uno de: {', '.join(DIAS_VALIDOS)}")
+        return v.lower() if v else v

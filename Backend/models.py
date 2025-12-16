@@ -6,7 +6,7 @@ class Rutina(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str = Field(index=True, unique=True)
     descripcion: Optional[str] = None
-    dia_semana: str = Field(min_length=4, max_length=10)  # ← string directo
+    dia_semana: str = Field(min_length=4, max_length=10)
     fecha_creacion: str = Field(default_factory=lambda: datetime.now().isoformat())
     
     ejercicios: List["Ejercicio"] = Relationship(back_populates="rutina")

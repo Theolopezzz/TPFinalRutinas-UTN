@@ -34,20 +34,6 @@ export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSeman
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Día de la semana</label>
-          <select
-            name="dia_semana"
-            value={formData.dia_semana}
-            onChange={handleChange}
-            className="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            {diasSemana.map(dia => (
-              <option key={dia.value} value={dia.value}>{dia.label}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Series</label>
           <input
             type="number"

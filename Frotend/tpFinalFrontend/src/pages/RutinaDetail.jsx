@@ -46,18 +46,6 @@ export default function RutinaDetail() {
 
   if (!rutina) return null;
 
-  // Agrupar ejercicios por día
-  const ejerciciosPorDia = {};
-  rutina.ejercicios?.forEach(ej => {
-    if (!ejerciciosPorDia[ej.dia_semana]) {
-      ejerciciosPorDia[ej.dia_semana] = [];
-    }
-    ejerciciosPorDia[ej.dia_semana].push(ej);
-  });
-
-  const diasOrdenados = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-  const diasConEjercicios = diasOrdenados.filter(dia => ejerciciosPorDia[dia]);
-
   const nombreDia = {
     lunes: 'Lunes',
     martes: 'Martes',
@@ -73,6 +61,9 @@ export default function RutinaDetail() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-white">{rutina.nombre}</h1>
+          <p className="text-orange-400 font-medium mt-1">
+            {nombreDia[rutina.dia_semana]}
+          </p>
           {rutina.descripcion && <p className="text-gray-300 mt-2">{rutina.descripcion}</p>}
         </div>
         <div className="flex space-x-3">
@@ -91,7 +82,7 @@ export default function RutinaDetail() {
         </div>
       </div>
 
-      {diasConEjercicios.length === 0 ? (
+      {rutina.ejercicios?.length === 0 ? (
         <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center">
           <p className="text-gray-300">Esta rutina no tiene ejercicios asignados.</p>
           <button
@@ -102,28 +93,24 @@ export default function RutinaDetail() {
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {diasConEjercicios.map(dia => (
-            <div key={dia} className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-              <h2 className="text-xl font-bold text-orange-400 mb-4">{nombreDia[dia]}</h2>
-              <div className="space-y-3">
-                {ejerciciosPorDia[dia]
-                  .sort((a, b) => a.orden - b.orden)
-                  .map((ej, index) => (
-                    <div key={index} className="bg-gray-900 p-4 rounded-lg border border-gray-700">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-semibold text-white">{ej.nombre}</h3>
-                        <span className="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-sm">
-                          {ej.series} × {ej.repeticiones}
-                          {ej.peso && ` · ${ej.peso}kg`}
-                        </span>
-                      </div>
-                      {ej.notas && <p className="text-gray-300 mt-2 text-sm">{ej.notas}</p>}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          ))}
+        <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+          <h2 className="text-xl font-bold text-orange-400 mb-4">Ejercicios</h2>
+          <div className="space-y-3">
+            {rutina.ejercicios
+              .sort((a, b) => a.orden - b.orden)
+              .map((ej, index) => (
+                <div key={index} className="bg-gray-900 p-4 rounded-lg border border-gray-700">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-semibold text-white">{ej.nombre}</h3>
+                    <span className="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-sm">
+                      {ej.series} × {ej.repeticiones}
+                      {ej.peso && ` · ${ej.peso}kg`}
+                    </span>
+                  </div>
+                  {ej.notas && <p className="text-gray-300 mt-2 text-sm">{ej.notas}</p>}
+                </div>
+              ))}
+          </div>
         </div>
       )}
     </div>

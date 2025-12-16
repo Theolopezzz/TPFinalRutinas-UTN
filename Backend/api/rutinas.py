@@ -2,29 +2,30 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 from database import get_session
 from crud import *
-from schemas import RutinaCreate, Rutina  # ← RutinaCreate y RutinaResponse del schema
-from models import Rutina as RutinaModel  # ← ¡El modelo de la base de datos!
+from schemas import RutinaCreate, Rutina 
+from models import Rutina as RutinaModel 
 from typing import List
+from schemas import Rutina, RutinaCreate, RutinaUpdate
 
 router = APIRouter(prefix="/api/rutinas", tags=["rutinas"])
 
 @router.post("/", response_model=Rutina)
 def crear_rutina(rutina: RutinaCreate, session: Session = Depends(get_session)):
-    # Verificar nombre único
+    
     existing = session.exec(select(RutinaModel).where(RutinaModel.nombre == rutina.nombre)).first()
     if existing:
         raise HTTPException(status_code=400, detail="Nombre de rutina ya existe")
     
-    # Crear rutina
+  
     rutina_db = create_rutina(session, rutina.dict(exclude={"ejercicios"}))
     
-    # Crear ejercicios
+    
     for ej in rutina.ejercicios:
         ej_dict = ej.dict()
         ej_dict["rutina_id"] = rutina_db.id
         create_ejercicio(session, ej_dict)
     
-    # Cargar la rutina completa con ejercicios
+    
     rutina_completa = get_rutina_by_id(session, rutina_db.id)
     return rutina_completa
 
@@ -38,34 +39,52 @@ def buscar_rutinas(nombre: str = Query(..., min_length=1), session: Session = De
 
 @router.get("/{rutina_id}", response_model=Rutina)
 def obtener_rutina(rutina_id: int, session: Session = Depends(get_session)):
-    rutina = get_rutina_by_id(session, rutina_id)  # ← Debe usar RutinaModel
+    rutina = get_rutina_by_id(session, rutina_id)  
     if not rutina:
         raise HTTPException(status_code=404, detail="Rutina no encontrada")
     return rutina
 
 @router.put("/{rutina_id}", response_model=Rutina)
-def actualizar_rutina(rutina_id: int, rutina: RutinaCreate, session: Session = Depends(get_session)):
+def actualizar_rutina(rutina_id: int, rutina: RutinaUpdate, session: Session = Depends(get_session)):
     rutina_actual = get_rutina_by_id(session, rutina_id)
     if not rutina_actual:
         raise HTTPException(status_code=404, detail="Rutina no encontrada")
     
-    if rutina.nombre != rutina_actual.nombre:
-        existing = session.exec(select(Rutina).where(Rutina.nombre == rutina.nombre)).first()
+    
+    if rutina.nombre and rutina.nombre != rutina_actual.nombre:
+        existing = session.exec(select(RutinaModel).where(RutinaModel.nombre == rutina.nombre)).first()
         if existing:
             raise HTTPException(status_code=400, detail="Nombre de rutina ya existe")
     
-    rutina_actualizado = update_rutina(session, rutina_id, rutina.dict(exclude={"ejercicios"}))
     
-    # Eliminar ejercicios actuales y crear nuevos
-    ejercicios_actuales = session.exec(select(Ejercicio).where(Ejercicio.rutina_id == rutina_id)).all()
-    for ej in ejercicios_actuales:
-        session.delete(ej)
+    update_data = rutina.dict(exclude_unset=True)
+    if "ejercicios" in update_data:
+        ejercicios_data = update_data.pop("ejercicios")
+    else:
+        ejercicios_data = None
+    
+   
+    for key, value in update_data.items():
+        setattr(rutina_actual, key, value)
+    
+    session.add(rutina_actual)
     session.commit()
     
-    for ej in rutina.ejercicios:
-        ej_dict = ej.dict()
-        ej_dict["rutina_id"] = rutina_id
-        create_ejercicio(session, ej_dict)
+    
+    if ejercicios_data is not None:
+        
+        ejercicios_actuales = session.exec(select(Ejercicio).where(Ejercicio.rutina_id == rutina_id)).all()
+        for ej in ejercicios_actuales:
+            session.delete(ej)
+        session.commit()
+        
+        for ej in ejercicios_data:
+            ej_dict = ej
+            ej_dict["rutina_id"] = rutina_id
+            create_ejercicio(session, ej_dict)
+    
+    session.refresh(rutina_actual)
+    
     
     return get_rutina_by_id(session, rutina_id)
 

@@ -7,7 +7,6 @@ def create_rutina(session: Session, rutina_data: dict) -> Rutina:
     rutina = Rutina(**rutina_data)
     session.add(rutina)
     session.commit()
-    # Recargar el objeto completo por ID
     return session.get(Rutina, rutina.id)
 
 def get_rutina_by_id(session: Session, rutina_id: int) -> Optional[Rutina]:
@@ -18,7 +17,6 @@ def get_rutina_by_id(session: Session, rutina_id: int) -> Optional[Rutina]:
 
 def get_all_rutinas(session: Session) -> List[Rutina]:
     rutinas = session.exec(select(Rutina)).all()
-    # Cargar ejercicios para cada rutina
     for r in rutinas:
         session.refresh(r, ["ejercicios"])
     return rutinas
@@ -43,6 +41,11 @@ def update_rutina(session: Session, rutina_id: int, rutina_data: dict) -> Option
 def delete_rutina(session: Session, rutina_id: int) -> bool:
     rutina = session.get(Rutina, rutina_id)
     if rutina:
+
+        ejercicios = session.exec(select(Ejercicio).where(Ejercicio.rutina_id == rutina_id)).all()
+        for ejercicio in ejercicios:
+            session.delete(ejercicio)
+        
         session.delete(rutina)
         session.commit()
         return True

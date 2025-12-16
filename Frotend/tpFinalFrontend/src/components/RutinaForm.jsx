@@ -1,53 +1,48 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import EjercicioForm from './EjercicioForm';
-
-const DIAS_SEMANA = [
-  { value: 'lunes', label: 'Lunes' },
-  { value: 'martes', label: 'Martes' },
-  { value: 'miercoles', label: 'Miércoles' },
-  { value: 'jueves', label: 'Jueves' },
-  { value: 'viernes', label: 'Viernes' },
-  { value: 'sabado', label: 'Sábado' },
-  { value: 'domingo', label: 'Domingo' }
-];
 
 export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
     nombre: rutinaInicial.nombre || '',
     descripcion: rutinaInicial.descripcion || '',
+    dia_semana: rutinaInicial.dia_semana || 'lunes',
     ejercicios: rutinaInicial.ejercicios || []
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // 👇 Definir la función handleSubmit aquí
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
 
+  // 👇 Definir otras funciones
   const handleAddEjercicio = () => {
     setFormData(prev => ({
       ...prev,
-      ejercicios: [...prev.ejercicios, { dia_semana: 'lunes', series: 3, repeticiones: 10, orden: prev.ejercicios.length }]
+      ejercicios: [...prev.ejercicios, { 
+        nombre: '', 
+        series: 4, 
+        repeticiones: 10, 
+        peso: 0, 
+        notas: '', 
+        orden: prev.ejercicios.length 
+      }]
     }));
   };
 
-  const handleEjercicioChange = (index, updatedEjercicio) => {
+  const handleEjercicioChange = (index, updatedEj) => {
     setFormData(prev => {
-      const nuevosEjercicios = [...prev.ejercicios];
-      nuevosEjercicios[index] = updatedEjercicio;
-      return { ...prev, ejercicios: nuevosEjercicios };
+      const newEjercicios = [...prev.ejercicios];
+      newEjercicios[index] = updatedEj;
+      return { ...prev, ejercicios: newEjercicios };
     });
   };
 
   const handleRemoveEjercicio = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      ejercicios: prev.ejercicios.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
+    setFormData(prev => {
+      const newEjercicios = prev.ejercicios.filter((_, i) => i !== index);
+      return { ...prev, ejercicios: newEjercicios };
+    });
   };
 
   return (
@@ -57,6 +52,7 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
           {rutinaInicial.id ? 'Editar Rutina' : 'Crear Nueva Rutina'}
         </h2>
         
+        {/* Campos de la rutina */}
         <div className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Nombre de la rutina *</label>
@@ -64,10 +60,29 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
               type="text"
               name="nombre"
               value={formData.nombre}
-              onChange={handleInputChange}
+              onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
               className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               required
             />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Día de la semana *</label>
+            <select
+              name="dia_semana"
+              value={formData.dia_semana}
+              onChange={(e) => setFormData(prev => ({ ...prev, dia_semana: e.target.value }))}
+              className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required
+            >
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miercoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+              <option value="sabado">Sábado</option>
+              <option value="domingo">Domingo</option>
+            </select>
           </div>
           
           <div>
@@ -75,13 +90,14 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
             <textarea
               name="descripcion"
               value={formData.descripcion}
-              onChange={handleInputChange}
+              onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}
               rows="3"
               className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
         </div>
         
+        {/* Sección de ejercicios */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-white">Ejercicios</h3>
@@ -98,7 +114,7 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
           </div>
           
           {formData.ejercicios.length === 0 ? (
-            <p className="text-gray-400 italic">No hay ejercicios agregados. Haz clic en "Agregar Ejercicio" para comenzar.</p>
+            <p className="text-gray-400 italic">No hay ejercicios agregados.</p>
           ) : (
             <div className="space-y-4">
               {formData.ejercicios.map((ejercicio, index) => (
@@ -107,13 +123,13 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
                   ejercicio={ejercicio}
                   onChange={(updatedEj) => handleEjercicioChange(index, updatedEj)}
                   onRemove={() => handleRemoveEjercicio(index)}
-                  diasSemana={DIAS_SEMANA}
                 />
               ))}
             </div>
           )}
         </div>
         
+        {/* Botones */}
         <div className="flex space-x-4">
           <button
             type="submit"
