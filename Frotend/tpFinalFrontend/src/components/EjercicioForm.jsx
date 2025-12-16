@@ -1,9 +1,8 @@
 import { useState } from 'react';
 
-export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSemana }) {
+export default function EjercicioForm({ ejercicio, onChange, onRemove }) {
   const [formData, setFormData] = useState({
     nombre: ejercicio.nombre || '',
-    dia_semana: ejercicio.dia_semana || 'lunes',
     series: ejercicio.series || 3,
     repeticiones: ejercicio.repeticiones || 10,
     peso: ejercicio.peso || '',
@@ -12,10 +11,25 @@ export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSeman
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    setFormData(prev => ({ ...prev, [name]: newValue }));
-    onChange({ ...formData, [name]: newValue });
+    const { name, value } = e.target;
+    
+    let newValue = value;
+    if (['series', 'repeticiones', 'peso'].includes(name)) {
+      if (value === '') {
+        newValue = null; 
+      } else {
+        newValue = parseFloat(value);
+        if (name === 'peso' && isNaN(newValue)) {
+          newValue = null;
+        }
+      }
+    }
+    
+    setFormData(prev => {
+      const updated = { ...prev, [name]: newValue };
+      onChange(updated); 
+      return updated;
+    });
   };
 
   return (
@@ -32,33 +46,30 @@ export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSeman
             required
           />
         </div>
-        
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Series</label>
           <input
             type="number"
             name="series"
             min="1"
-            value={formData.series}
+            value={formData.series || ''}
             onChange={handleChange}
             className="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           />
         </div>
-        
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Repeticiones</label>
           <input
             type="number"
             name="repeticiones"
             min="1"
-            value={formData.repeticiones}
+            value={formData.repeticiones || ''}
             onChange={handleChange}
             className="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           />
         </div>
-        
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Peso (kg) - opcional</label>
           <input
@@ -66,13 +77,12 @@ export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSeman
             name="peso"
             min="0"
             step="0.1"
-            value={formData.peso}
+            value={formData.peso ?? ''}
             onChange={handleChange}
             className="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
       </div>
-      
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-300 mb-1">Notas adicionales</label>
         <textarea
@@ -83,7 +93,6 @@ export default function EjercicioForm({ ejercicio, onChange, onRemove, diasSeman
           className="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
-      
       <button
         type="button"
         onClick={onRemove}

@@ -1,14 +1,27 @@
-// src/pages/RutinaCreate.jsx
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import RutinaForm from '../components/RutinaForm';
+
+const cleanRutinaData = (data) => {
+  return {
+    ...data,
+    ejercicios: data.ejercicios.map(ej => {
+      const { peso, ...rest } = ej;
+      if (peso === null || peso === undefined || peso === '' || isNaN(peso)) {
+        return rest;
+      }
+      return { ...rest, peso: parseFloat(peso) };
+    })
+  };
+};
 
 export default function RutinaCreate() {
   const navigate = useNavigate();
 
   const handleGuardar = async (rutinaData) => {
     try {
-      await api.post('/rutinas', rutinaData);
+      const cleanedData = cleanRutinaData(rutinaData);
+      await api.post('/rutinas', cleanedData);
       navigate('/');
     } catch (error) {
       console.error('Error al crear rutina:', error);

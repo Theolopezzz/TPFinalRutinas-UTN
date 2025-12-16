@@ -1,8 +1,20 @@
-// src/pages/RutinaEdit.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import RutinaForm from '../components/RutinaForm';
+
+const cleanRutinaData = (data) => {
+  return {
+    ...data,
+    ejercicios: data.ejercicios.map(ej => {
+      const { peso, ...rest } = ej;
+      if (peso === null || peso === undefined || peso === '' || isNaN(peso)) {
+        return rest;
+      }
+      return { ...rest, peso: parseFloat(peso) };
+    })
+  };
+};
 
 export default function RutinaEdit() {
   const { id } = useParams();
@@ -24,7 +36,8 @@ export default function RutinaEdit() {
 
   const handleGuardar = async (rutinaData) => {
     try {
-      await api.put(`/rutinas/${id}`, rutinaData);
+      const cleanedData = cleanRutinaData(rutinaData);
+      await api.put(`/rutinas/${id}`, cleanedData);
       navigate('/');
     } catch (error) {
       console.error('Error al actualizar rutina:', error);

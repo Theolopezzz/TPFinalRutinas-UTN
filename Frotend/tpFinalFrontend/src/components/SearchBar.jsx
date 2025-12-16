@@ -16,7 +16,7 @@ export default function SearchBar({ onSearch }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar rutinas por nombre..."
-          className="w-full p-3 pl-10 pr-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="w-full p-5 pl-10 pr-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
         />
         <svg 
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" 

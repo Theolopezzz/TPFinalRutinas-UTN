@@ -9,13 +9,11 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
     ejercicios: rutinaInicial.ejercicios || []
   });
 
-  // 👇 Definir la función handleSubmit aquí
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  // 👇 Definir otras funciones
   const handleAddEjercicio = () => {
     setFormData(prev => ({
       ...prev,
@@ -52,7 +50,6 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
           {rutinaInicial.id ? 'Editar Rutina' : 'Crear Nueva Rutina'}
         </h2>
         
-        {/* Campos de la rutina */}
         <div className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Nombre de la rutina *</label>
@@ -97,7 +94,6 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
           </div>
         </div>
         
-        {/* Sección de ejercicios */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-white">Ejercicios</h3>
@@ -129,7 +125,6 @@ export default function RutinaForm({ rutinaInicial = {}, onSubmit, onCancel }) {
           )}
         </div>
         
-        {/* Botones */}
         <div className="flex space-x-4">
           <button
             type="submit"

@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
 
 export default function RutinaCard({ rutina }) {
-  // Contar la cantidad de ejercicios
   const cantidadEjercicios = rutina.ejercicios?.length || 0;
   
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden hover:border-orange-500 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
+    <div className="mt-2 bg-gray-800 rounded-xl border border-gray-700 overflow-hidden hover:border-orange-500 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
       <div className="p-6">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-bold text-white">{rutina.nombre}</h3>
