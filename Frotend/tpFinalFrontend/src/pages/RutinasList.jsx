@@ -35,10 +35,10 @@ export default function RutinasList() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">NeoRoutines</h1>
+        <h1 className="mb-3 text-3xl font-bold text-white">NeoRoutines</h1>
         <Link 
           to="/crear"
-          className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-6 rounded-lg font-bold transition-colors duration-200 flex items-center space-x-2"
+          className="mb-3 bg-orange-600 hover:bg-orange-700 text-white py-2 px-6 rounded-lg font-bold transition-colors duration-200 flex items-center space-x-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -79,7 +79,7 @@ export default function RutinasList() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {rutinas.map(rutina => (
             <RutinaCard key={rutina.id} rutina={rutina} />
           ))}

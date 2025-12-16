@@ -10,7 +10,7 @@ export default function SearchBar({ onSearch }) {
 
   return (
     <form onSubmit={handleSubmit} className="mb-6">
-      <div className="relative">
+      <div className="relative mb-12">
         <input
           type="text"
           value={query}

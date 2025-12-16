@@ -219,17 +219,6 @@ http://localhost:5173
 
 ## ⚠️ Notas de compatibilidad
 
-### 🔴 Problemas conocidos y soluciones
-
-| Problema                                        | Solución                                                      |
-| ----------------------------------------------- | ------------------------------------------------------------- |
-| `ValueError: 'validated_data' must be provided` | Usar Pydantic v1 (`pip install "pydantic<2.0"`)               |
-| Error CORS                                      | Asegurarse de tener `CORSMiddleware` configurado en `main.py` |
-| `dia_semana` en ejercicios                      | El día pertenece a la rutina, no a los ejercicios             |
-| Peso vacío produce error 422                    | Convertir campos numéricos vacíos a `null`                    |
-| Error de collation en PostgreSQL                | Crear la DB usando `TEMPLATE = template0`                     |
-
----
 
 ### 🔵 Dependencias críticas
 
@@ -245,8 +234,6 @@ http://localhost:5173
 
 * Activar siempre el entorno virtual antes de ejecutar el backend
 * No usar Pydantic v2 bajo ningún concepto
-* Convertir inputs numéricos vacíos a `null`, no a `""`
-* El día de la semana pertenece a la rutina, no a los ejercicios
 * Si se modifica el modelo, recrear la base de datos
 
 ---
@@ -255,11 +242,9 @@ http://localhost:5173
 
 * Backend funcionando en `http://localhost:8000/docs`
 * Frontend conectado al backend sin errores CORS
-* Se pueden crear rutinas sin peso (campo opcional)
 * Los días se muestran correctamente en cada rutina
 * La búsqueda filtra correctamente por nombre
 * La eliminación borra los ejercicios asociados
-* El diseño aplica correctamente el tema naranja/negro de **NeoRoutines**
 
 ---
 
