@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import RutinaForm from '../components/RutinaForm';
 
@@ -52,12 +52,20 @@ export default function RutinaEdit() {
   if (!rutina) return null;
 
   return (
-    <div>
-      <RutinaForm 
-        rutinaInicial={rutina} 
-        onSubmit={handleGuardar} 
-        onCancel={handleCancelar} 
-      />
-    </div>
+    <>
+      <Link 
+        to="/" 
+        className="inline-block mb-4 text-orange-400 hover:text-orange-300 font-medium"
+      >
+        ← Volver al inicio
+      </Link>
+      <div>
+        <RutinaForm 
+          rutinaInicial={rutina} 
+          onSubmit={handleGuardar} 
+          onCancel={handleCancelar} 
+        />
+      </div>
+    </>
   );
 }
